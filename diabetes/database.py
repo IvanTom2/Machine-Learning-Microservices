@@ -284,6 +284,38 @@ class DataBaseInterface(object):
             connection: Connection
             await connection.execute(query)
 
+    async def get_data_to_train(self):
+        query = f"""
+                SELECT 
+                {Patient.TABLE_NAME}.{Patient.PATIENT_ID.name},
+                {Observation.TABLE_NAME}.{Observation.OBSERVATION_ID.name},
+                {ObservationData.TABLE_NAME}.{ObservationData.PREGNANCIES.name},
+                {ObservationData.TABLE_NAME}.{ObservationData.GLUCOSE.name},
+                {ObservationData.TABLE_NAME}.{ObservationData.BLOOD_PRESSURE.name},
+                {ObservationData.TABLE_NAME}.{ObservationData.SKIN_THICKNESS.name},
+                {ObservationData.TABLE_NAME}.{ObservationData.INSULIN.name},
+                {ObservationData.TABLE_NAME}.{ObservationData.BMI.name},
+                {ObservationData.TABLE_NAME}.{ObservationData.DIABETES_PEDIGREE_FUNCTION.name},
+                {FinalReport.TABLE_NAME}.{FinalReport.DIAGNOSIS.name}
+                FROM {Patient.TABLE_NAME} 
+                    LEFT JOIN {Observation.TABLE_NAME} 
+                        ON {Patient.TABLE_NAME}.{Patient.PATIENT_ID.name} 
+                        = {Observation.TABLE_NAME}.{Observation.PATIENT_ID.name}
+                    LEFT JOIN {ObservationData.TABLE_NAME} 
+                        ON {Observation.TABLE_NAME}.{Observation.OBSERVATION_ID.name} 
+                        = {ObservationData.TABLE_NAME}.{ObservationData.OBSERVATION_ID.name}
+                    LEFT JOIN {FinalReport.TABLE_NAME}
+                        ON {Observation.TABLE_NAME}.{Observation.OBSERVATION_ID.name} 
+                        = {FinalReport.TABLE_NAME}.{FinalReport.OBSERVATION_ID.name}
+                WHERE {FinalReport.TABLE_NAME}.{FinalReport.DIAGNOSIS.name} IS NOT NULL;
+                """
+
+        async with self._pool.acquire() as connection:
+            connection: Connection
+            data = await connection.fetch(query)
+
+        return data
+
 
 class DataBaseFiller(object):
     async def insert_patients(
