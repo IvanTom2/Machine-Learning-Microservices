@@ -460,8 +460,8 @@ async def test():
 
 
 if __name__ == "__main__":
-    # DBI = DataBaseInit(config["DB_DIABETES"])
-    # asyncio.run(DBI.init_tables())
+    DBI = DataBaseInit(config["DB_DIABETES"])
+    asyncio.run(DBI.init_tables())
 
     # asyncio.run(test())
 
