@@ -53,10 +53,10 @@ class ObservationData(Notation):
     TABLE_NAME = "observation_data"
     OBSERVATION_ID = Attribute("observation_id", "INT")
     PREGNANCIES = Attribute("pregnancies", "INT")
-    GLUCOSE = Attribute("glucose", "INT")
-    BLOOD_PRESSURE = Attribute("blood_pressure", "INT")
-    SKIN_THICKNESS = Attribute("skin_thickness", "INT")
-    INSULIN = Attribute("insulin", "INT")
+    GLUCOSE = Attribute("glucose", "FLOAT")
+    BLOOD_PRESSURE = Attribute("blood_pressure", "FLOAT")
+    SKIN_THICKNESS = Attribute("skin_thickness", "FLOAT")
+    INSULIN = Attribute("insulin", "FLOAT")
     BMI = Attribute("bmi", "FLOAT")
     DIABETES_PEDIGREE_FUNCTION = Attribute("diabetes_predigree_function", "FLOAT")
 

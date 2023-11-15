@@ -288,7 +288,9 @@ class DataBaseInterface(object):
         query = f"""
                 SELECT 
                 {Patient.TABLE_NAME}.{Patient.PATIENT_ID.name},
+                {Patient.TABLE_NAME}.{Patient.BIRTHDAY.name},
                 {Observation.TABLE_NAME}.{Observation.OBSERVATION_ID.name},
+                {Observation.TABLE_NAME}.{Observation.OBSERVATION_DATE.name},
                 {ObservationData.TABLE_NAME}.{ObservationData.PREGNANCIES.name},
                 {ObservationData.TABLE_NAME}.{ObservationData.GLUCOSE.name},
                 {ObservationData.TABLE_NAME}.{ObservationData.BLOOD_PRESSURE.name},
