@@ -6,7 +6,7 @@ from typing import Optional
 @dataclass
 class Attribute(object):
     name: str
-    type: StopIteration
+    type: str
 
 
 class Notation(ABCMeta):
@@ -75,5 +75,38 @@ class PreliminaryReport(Notation):
     REPORT_DATE = Attribute("preliminary_report_date", "DATE")
 
 
+class Feature(Notation):
+    TABLE_NAME = "features"
+    TARGET = Attribute(FinalReport.DIAGNOSIS.name, "TARGET")
+
+    PREGNANCIES = Attribute(ObservationData.PREGNANCIES.name, "NUMERIC")
+    GLUCOSE = Attribute(ObservationData.GLUCOSE.name, "NUMERIC")
+    BLOOD_PRESSURE = Attribute(ObservationData.BLOOD_PRESSURE.name, "NUMERIC")
+    SKIN_THICKNESS = Attribute(ObservationData.SKIN_THICKNESS.name, "NUMERIC")
+    INSULIN = Attribute(ObservationData.INSULIN.name, "NUMERIC")
+    BMI = Attribute(ObservationData.BMI.name, "NUMERIC")
+    DIABETES_PEDIGREE_FUNCTION = Attribute(
+        ObservationData.DIABETES_PEDIGREE_FUNCTION.name, "NUMERIC"
+    )
+    AGE = Attribute("age", "NUMERIC")
+
+    NF0 = Attribute("NF0", "NUMERIC")
+    NF1 = Attribute("NF1", "BINARY")
+    NF2 = Attribute("NF2", "BINARY")
+    NF3 = Attribute("NF3", "BINARY")
+    NF4 = Attribute("NF4", "BINARY")
+    NF5 = Attribute("NF5", "BINARY")
+    NF6 = Attribute("NF6", "BINARY")
+    NF7 = Attribute("NF7", "BINARY")
+    NF8 = Attribute("NF8", "NUMERIC")
+    NF9 = Attribute("NF9", "BINARY")
+    NF10 = Attribute("NF10", "BINARY")
+    NF11 = Attribute("NF11", "BINARY")
+    NF12 = Attribute("NF12", "NUMERIC")
+    NF13 = Attribute("NF13", "NUMERIC")
+    NF14 = Attribute("NF14", "NUMERIC")
+    NF15 = Attribute("NF15", "BINARY")
+
+
 if __name__ == "__main__":
-    print(Patient.get_keys())
+    print(Feature.get_keys())

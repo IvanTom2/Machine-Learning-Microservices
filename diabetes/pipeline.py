@@ -2,11 +2,14 @@
 There will be a pipeline for processing data entering the model.
 """
 import asyncio
+import pickle
 import pandas as pd
 from dateutil.relativedelta import relativedelta
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
 
 from database import DataBaseInterface
-from notation import Patient
+from notation import Patient, Feature
 
 
 class DBAdapter(object):
@@ -121,13 +124,49 @@ def extract_columns(data: pd.DataFrame):
     return data[need_cols]
 
 
+def scale_features_learner(data: pd.DataFrame) -> pd.DataFrame:
+    target = Feature.TARGET.name
+
+    numeric = [f.name for f in Feature.get_keys() if f.type == "NUMERIC"]
+    binary = [f.name for f in Feature.get_keys() if f.type == "BINARY"]
+
+    std = StandardScaler()
+    std = std.fit(data[numeric])
+    std_cols = numeric
+
+    data[numeric] = std.transform(data[numeric])
+
+    X = data[numeric + binary]
+    y = data[target]
+    return X, y, std, std_cols
+
+
+def scale_features(row: pd.Series, std: StandardScaler) -> pd.Series:
+    numeric = [f.name for f in Feature.get_keys() if f.type == "NUMERIC"]
+    row[numeric] = std.transform(row[numeric])
+    return row
+
+
+def save_model(path, model) -> None:
+    if ".pickle" not in str(path):
+        raise ValueError("Path should contains {name}.pickle")
+
+    with open(path, "wb") as file:
+        pickle.dump(model, file)
+
+
+def upload_model(path):
+    with open(path, "rb") as file:
+        model = pickle.load(file)
+    return model
+
+
 if __name__ == "__main__":
     db_adapter = DBAdapter()
 
     data = db_adapter.get_data()
-
     data = setup_nulls(data)
     data = data.apply(setup_new_features, axis=1)
     data = extract_columns(data)
 
-    print(data)
+    X, y = scale_features_learner(data)
