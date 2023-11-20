@@ -88,24 +88,30 @@ class Feature(Notation):
     DIABETES_PEDIGREE_FUNCTION = Attribute(
         ObservationData.DIABETES_PEDIGREE_FUNCTION.name, "NUMERIC"
     )
+
     AGE = Attribute("age", "NUMERIC")
 
-    NF0 = Attribute("NF0", "NUMERIC")
-    NF1 = Attribute("NF1", "BINARY")
-    NF2 = Attribute("NF2", "BINARY")
-    NF3 = Attribute("NF3", "BINARY")
-    NF4 = Attribute("NF4", "BINARY")
-    NF5 = Attribute("NF5", "BINARY")
-    NF6 = Attribute("NF6", "BINARY")
-    NF7 = Attribute("NF7", "BINARY")
-    NF8 = Attribute("NF8", "NUMERIC")
-    NF9 = Attribute("NF9", "BINARY")
-    NF10 = Attribute("NF10", "BINARY")
-    NF11 = Attribute("NF11", "BINARY")
-    NF12 = Attribute("NF12", "NUMERIC")
-    NF13 = Attribute("NF13", "NUMERIC")
-    NF14 = Attribute("NF14", "NUMERIC")
-    NF15 = Attribute("NF15", "BINARY")
+    @classmethod
+    @property
+    def numeric_columns(self) -> list[str]:
+        return [f.name for f in Feature.get_keys() if f.type == "NUMERIC"]
+
+    @classmethod
+    @property
+    def binary_columns(self) -> list[str]:
+        return [f.name for f in Feature.get_keys() if f.type == "BINARY"]
+
+    @classmethod
+    @property
+    def feature_columns(self) -> list[str]:
+        numeric = self.numeric_columns
+        binary = self.binary_columns
+        return numeric + binary
+
+    @classmethod
+    @property
+    def target(self):
+        return self.TARGET.name
 
 
 if __name__ == "__main__":
