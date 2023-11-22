@@ -8,6 +8,7 @@ from asyncio import Lock
 from typing import Any
 from functools import wraps
 from datetime import datetime, timedelta
+from aiohttp.web_app import Application
 
 
 sys.path.append(str(Path(__file__).parent.parent))
@@ -22,6 +23,9 @@ from util import (
     PreliminaryReportObject,
 )
 from notation import Patient, Observation, FinalReport, PreliminaryReport
+
+
+DB_KEY = "database"
 
 
 async def get_observation_date():
@@ -140,7 +144,7 @@ class DataBaseInterface(object):
     ) -> None:
         self.db_connections_count = db_connections_count
 
-    async def create_pool(self):
+    async def create_pool(self) -> None:
         print("CREATE DB CONNECTIONS POOL")
         self._pool: Pool = await asyncpg.create_pool(
             host=config["DB_HOST"],
@@ -151,6 +155,9 @@ class DataBaseInterface(object):
             min_size=self.db_connections_count,
             max_size=self.db_connections_count,
         )
+
+    async def destroy_pool(self) -> None:
+        await self._pool.close()
 
     async def insert_patient_data(
         self,
@@ -415,6 +422,21 @@ class DataBaseFiller(object):
                 reports,
             )
         )
+
+
+async def create_db_interface(
+    app: Application,
+    connections_count: int = 6,
+) -> None:
+    db = DataBaseInterface(connections_count)
+    await db.create_pool()
+
+    app[DB_KEY] = db
+
+
+async def destroy_db_interface(app: Application) -> None:
+    db: DataBaseInterface = app[DB_KEY]
+    await db.destroy_pool()
 
 
 async def test():

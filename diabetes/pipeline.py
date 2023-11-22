@@ -1,6 +1,7 @@
 """
 There will be a pipeline for processing data entering the model.
 """
+import re
 import asyncio
 import pickle
 import pandas as pd
@@ -10,6 +11,8 @@ from dateutil.relativedelta import relativedelta
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
+from aiohttp.web_app import Application
+
 
 from database import DataBaseInterface
 from notation import (
@@ -21,6 +24,7 @@ from notation import (
     Feature,
 )
 
+
 RANDOM_STATE = 42
 TEST_SAMPLE_SIZE = 0.3
 
@@ -28,6 +32,8 @@ MODELS_PATH = Path(__file__).parent / "models"
 STD_PATH = "std_model.pickle"
 MEDIANS_PATH = "medians.pickle"
 MAIN_MODEL = "main_model.pickle"
+
+PIPELINE_KEY = "pipeline"
 
 
 class DBAdapter(object):
@@ -69,6 +75,10 @@ def save_model(path, model) -> None:
 def upload_model(path):
     with open(path, "rb") as file:
         model = pickle.load(file)
+
+    model_name = re.split("[\/]", str(path))[-1]
+    print(f"Uploaded model {model_name}")
+
     return model
 
 
@@ -188,8 +198,6 @@ class ProductPipeline(LearnPipeline):
         self.medians = self._upload_model(MODELS_PATH / MEDIANS_PATH)
         self.std_model = self._upload_model(MODELS_PATH / STD_PATH)
 
-        print(self.medians)
-
     def _upload_model(self, path):
         return upload_model(path)
 
@@ -201,6 +209,11 @@ class ProductPipeline(LearnPipeline):
         data, _ = self.scale_features(data)
 
         return data
+
+
+async def create_pipeline(app: Application) -> None:
+    pipeline = ProductPipeline()
+    app[PIPELINE_KEY] = pipeline
 
 
 if __name__ == "__main__":

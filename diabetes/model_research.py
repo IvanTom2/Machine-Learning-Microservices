@@ -58,7 +58,7 @@ def test_knn_model():
 
 if __name__ == "__main__":
     ## code for learning models
-    train_knn()
+    # train_knn()
 
     ## code for test models usage
-    # test_knn_model()
+    test_knn_model()

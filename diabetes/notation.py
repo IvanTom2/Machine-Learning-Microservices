@@ -1,6 +1,7 @@
 from abc import ABCMeta
 from dataclasses import dataclass
 from typing import Optional
+from pathlib import Path
 
 
 @dataclass
@@ -112,6 +113,12 @@ class Feature(Notation):
     @property
     def target(self):
         return self.TARGET.name
+
+
+class PageTemplate(Notation):
+    DIR = Path("diabetes") / "templates"
+
+    APPOINTMENT = DIR / "appointment.html"
 
 
 if __name__ == "__main__":
